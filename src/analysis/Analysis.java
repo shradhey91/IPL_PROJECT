@@ -365,6 +365,52 @@ public class Analysis {
         }
     }
 
+    public void highestSinglesAgainstCSK2015(List<Match> matches,
+            List<Delivery> deliveries) {
+
+        HashMap<Integer, String> map = new HashMap<>();
+
+        for (Match m : matches) {
+
+            if (m.season == 2015
+                    && (m.team1.equals("Chennai Super Kings")
+                    || m.team2.equals("Chennai Super Kings"))) {
+
+                if (m.team1.equals("Chennai Super Kings")) {
+                    map.put(m.id, m.team2);
+                } else {
+                    map.put(m.id, m.team1);
+                }
+            }
+        }
+
+        HashMap<String, Integer> singles = new HashMap<>();
+
+        for (Delivery d : deliveries) {
+
+            if (map.containsKey(d.matchId)
+                    && d.over >= 16
+                    && d.batsmanRuns == 1) {
+
+                singles.put(d.battingTeam,
+                        singles.getOrDefault(d.battingTeam, 0) + 1);
+            }
+        }
+
+        String topTeam = "";
+        int max = 0;
+
+        for (var e : singles.entrySet()) {
+
+            if (e.getValue() > max) {
+                max = e.getValue();
+                topTeam = e.getKey();
+            }
+        }
+
+        System.out.println(topTeam + " -> " + max);
+    }
+
     public void headToHead(List<Match> matches) {
 
         Map<String, Map<String, Integer>> map = new HashMap<>();

@@ -14,7 +14,7 @@ public class Main {
         System.out.println("Matches loaded: " + matches.size());
         System.out.println("Deliveries loaded: " + deliveries.size());
 
-         a.matchesPlayedPerYear(matches);
+        // a.matchesPlayedPerYear(matches);
         // a.matchesWonPerTeam(matches);
         // a.extraRunsPerTeam(matches, deliveries);
         // a.bowlersEconomyArrange(matches, deliveries);
@@ -29,5 +29,6 @@ public class Main {
         // a.winPercentOfTeams(matches);
         // a.headToHead(matches);
         // a.top5batsmanWithStrikeRate(deliveries);
+        a.highestSinglesAgainstCSK2015(matches, deliveries);
     }
 }

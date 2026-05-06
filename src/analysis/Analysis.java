@@ -97,7 +97,6 @@ public class Analysis {
             }
         });
 
-        // Step 6: print top 10
         int count = 0;
         for (Map.Entry<String, Double> e : list) {
             System.out.println(e.getKey() + " -> " + e.getValue());
@@ -212,7 +211,6 @@ public class Analysis {
 
         Map<String, Integer> sorted = new TreeMap<>(ans);
 
-        //System.out.println(sorted);
         for (var m : sorted.entrySet()) {
             System.out.println(m.getKey() + " --> " + m.getValue());
         }
@@ -362,6 +360,180 @@ public class Analysis {
             if (count == 5) {
                 break;
             }
+        }
+    }
+
+    public void mostCatchesDeath2016(List<Match> matches,
+            List<Delivery> deliveries) {
+
+        HashMap<Integer, Match> map = new HashMap<>();
+
+        for (Match m : matches) {
+
+            if (m.season == 2016) {
+                map.put(m.id, m);
+            }
+        }
+
+        HashMap<String, Integer> catches = new HashMap<>();
+
+        for (Delivery d : deliveries) {
+
+            if (map.containsKey(d.matchId)
+                    && d.over >= 16
+                    && d.dismissalKind.equals("caught")) {
+
+                Match m = map.get(d.matchId);
+
+                String fieldingTeam;
+
+                if (d.battingTeam.equals(m.team1)) {
+                    fieldingTeam = m.team2;
+                } else {
+                    fieldingTeam = m.team1;
+                }
+
+                catches.put(fieldingTeam,
+                        catches.getOrDefault(fieldingTeam, 0) + 1);
+            }
+        }
+
+        String topTeam = "";
+        int max = 0;
+
+        for (var e : catches.entrySet()) {
+
+            if (e.getValue() > max) {
+                max = e.getValue();
+                topTeam = e.getKey();
+            }
+        }
+
+        System.out.println(topTeam + " -> " + max);
+    }
+
+    public void bestDeathOverBowlerPerSeason(List<Match> matches,
+            List<Delivery> deliveries) {
+
+        HashMap<Integer, Integer> matchSeason = new HashMap<>();
+
+        for (Match m : matches) {
+            matchSeason.put(m.id, m.season);
+        }
+
+        HashMap<Integer, HashMap<String, Integer>> runsMap = new HashMap<>();
+        HashMap<Integer, HashMap<String, Integer>> ballsMap = new HashMap<>();
+
+        for (Delivery d : deliveries) {
+
+            if (d.over >= 16) {
+
+                int season = matchSeason.get(d.matchId);
+
+                runsMap.putIfAbsent(season, new HashMap<>());
+                ballsMap.putIfAbsent(season, new HashMap<>());
+
+                HashMap<String, Integer> rMap = runsMap.get(season);
+                HashMap<String, Integer> bMap = ballsMap.get(season);
+
+                rMap.put(d.bowler,
+                        rMap.getOrDefault(d.bowler, 0) + d.totalRuns);
+
+                if (d.wideRuns == 0) {
+
+                    bMap.put(d.bowler,
+                            bMap.getOrDefault(d.bowler, 0) + 1);
+                }
+            }
+        }
+
+        for (Integer season : runsMap.keySet()) {
+
+            String bestBowler = "";
+            double bestEconomy = Double.MAX_VALUE;
+
+            HashMap<String, Integer> rMap = runsMap.get(season);
+            HashMap<String, Integer> bMap = ballsMap.get(season);
+
+            for (String bowler : rMap.keySet()) {
+
+                int runs = rMap.get(bowler);
+                int balls = bMap.getOrDefault(bowler, 0);
+
+                if (balls > 0) {
+
+                    double economy = (runs * 6.0) / balls;
+
+                    if (economy < bestEconomy) {
+                        bestEconomy = economy;
+                        bestBowler = bowler;
+                    }
+                }
+            }
+
+            System.out.println(season + " -> "
+                    + bestBowler + " -> " + bestEconomy);
+        }
+    }
+
+    public void mostRunsAgainstRCBByVenue2016(List<Match> matches,
+            List<Delivery> deliveries) {
+
+        HashMap<Integer, String> venueMap = new HashMap<>();
+        HashMap<Integer, Match> matchMap = new HashMap<>();
+
+        for (Match m : matches) {
+
+            if (m.season == 2016
+                    && (m.team1.equals("Royal Challengers Bangalore")
+                    || m.team2.equals("Royal Challengers Bangalore"))) {
+
+                venueMap.put(m.id, m.venue);
+                matchMap.put(m.id, m);
+            }
+        }
+
+        HashMap<String, HashMap<String, Integer>> map = new HashMap<>();
+
+        for (Delivery d : deliveries) {
+
+            if (venueMap.containsKey(d.matchId)) {
+
+                Match m = matchMap.get(d.matchId);
+
+        
+                if (!d.battingTeam.equals("Royal Challengers Bangalore")) {
+
+                    String venue = venueMap.get(d.matchId);
+
+                    map.putIfAbsent(venue, new HashMap<>());
+
+                    HashMap<String, Integer> batsmanMap = map.get(venue);
+
+                    batsmanMap.put(d.batsman,
+                            batsmanMap.getOrDefault(d.batsman, 0)
+                            + d.batsmanRuns);
+                }
+            }
+        }
+
+        for (String venue : map.keySet()) {
+
+            HashMap<String, Integer> batsmanMap = map.get(venue);
+
+            String topPlayer = "";
+            int maxRuns = 0;
+
+            for (var e : batsmanMap.entrySet()) {
+
+                if (e.getValue() > maxRuns) {
+                    maxRuns = e.getValue();
+                    topPlayer = e.getKey();
+                }
+            }
+
+            System.out.println(venue + " -> "
+                    + topPlayer + " -> " + maxRuns);
         }
     }
 

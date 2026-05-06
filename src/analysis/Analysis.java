@@ -117,5 +117,18 @@ public class Analysis{
         }
     }
 
+     public void matchesPlayedPerCity(List<Match> matches) {
+        HashMap<String, Integer> countByCity = new HashMap<>();
+
+        for (Match m : matches) {
+            countByCity.put(m.city, countByCity.getOrDefault(m.city, 0) + 1);
+        }
+
+        System.out.println("---- Matches Played Per City ----");
+        for (Map.Entry<String, Integer> entry : countByCity.entrySet()) {
+            System.out.println(entry.getKey() + " -> " + entry.getValue() + " matches");
+        }
+    }
+
 
 }

@@ -25,5 +25,20 @@ public class Analysis{
         }
     }
 
+     public void matchesWonPerTeam(List<Match> matches) {
+        HashMap<String, Integer> winsByTeam = new HashMap<>();
+
+        for (Match m : matches) {
+            if (m.winner != null && !m.winner.isEmpty()) {
+                winsByTeam.put(m.winner, winsByTeam.getOrDefault(m.winner, 0) + 1);
+            }
+        }
+
+        System.out.println("=== Matches Won Per Team ===");
+        for (Map.Entry<String, Integer> entry : winsByTeam.entrySet()) {
+            System.out.println(entry.getKey() + " -> " + entry.getValue() + " wins");
+        }
+    }
+
 
 }

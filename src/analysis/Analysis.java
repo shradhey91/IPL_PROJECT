@@ -188,5 +188,23 @@ public class Analysis{
         System.out.println("Ended by Wickets -> " + endedByWickets);
     }
 
+     public void playerOfTheMatchCounts(List<Match> matches) {
+        HashMap<String, Integer> awardCounts = new HashMap<>();
+
+        for (Match m : matches) {
+            if (m.playerOfMatch != null && !m.playerOfMatch.isEmpty()) {
+                awardCounts.put(m.playerOfMatch,
+                        awardCounts.getOrDefault(m.playerOfMatch, 0) + 1);
+            }
+        }
+
+        Map<String, Integer> sorted = new TreeMap<>(awardCounts);
+
+        System.out.println("--- Player of the Match Award Counts ---");
+        for (Map.Entry<String, Integer> entry : sorted.entrySet()) {
+            System.out.println(entry.getKey() + " -> " + entry.getValue());
+        }
+    }
+
 
 }

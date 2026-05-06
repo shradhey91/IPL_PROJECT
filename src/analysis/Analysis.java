@@ -206,5 +206,29 @@ public class Analysis{
         }
     }
 
+     public void winPercentageOfTeams(List<Match> matches) {
+        HashMap<String, Integer> matchesPlayed = new HashMap<>();
+        HashMap<String, Integer> matchesWon    = new HashMap<>();
+
+        for (Match m : matches) {
+
+            matchesPlayed.put(m.team1, matchesPlayed.getOrDefault(m.team1, 0) + 1);
+            matchesPlayed.put(m.team2, matchesPlayed.getOrDefault(m.team2, 0) + 1);
+
+            
+            if (m.winner != null && !m.winner.isEmpty()) {
+                matchesWon.put(m.winner, matchesWon.getOrDefault(m.winner, 0) + 1);
+            }
+        }
+
+        System.out.println("=== Win Percentage Per Team ===");
+        for (String team : matchesPlayed.keySet()) {
+            int played = matchesPlayed.get(team);
+            int won    = matchesWon.getOrDefault(team, 0);
+            double winPercent = (won * 100.0) / played;
+            System.out.printf("%-40s -> %.2f%%%n", team, winPercent);
+        }
+    }
+
 
 }

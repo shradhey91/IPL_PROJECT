@@ -130,5 +130,19 @@ public class Analysis{
         }
     }
 
+     public void tossWinsPerTeam(List<Match> matches) {
+        HashMap<String, Integer> tossWinsByTeam = new HashMap<>();
+
+        for (Match m : matches) {
+            tossWinsByTeam.put(m.tossWinner,
+                    tossWinsByTeam.getOrDefault(m.tossWinner, 0) + 1);
+        }
+
+        System.out.println("---- Toss Wins Per Team ----");
+        for (Map.Entry<String, Integer> entry : tossWinsByTeam.entrySet()) {
+            System.out.println(entry.getKey() + " -> " + entry.getValue() + " toss wins");
+        }
+    }
+
 
 }

@@ -10,225 +10,390 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
-import model.*;
+import model.Delivery;
+import model.Match;
 
-public class Analysis{
+public class Analysis {
 
+    public void matchesPlayedPerYear(List<Match> matches) {
+        HashMap<Integer, Integer> map = new HashMap<>();
 
-     public void matchesPlayedPerYear(List<Match> matches) {
-        HashMap<Integer, Integer> countBySeason = new HashMap<>();
-
-        for (Match m : matches) {
-            countBySeason.put(m.season, countBySeason.getOrDefault(m.season, 0) + 1);
+        for (var m : matches) {
+            map.put(m.season, map.getOrDefault(m.season, 0) + 1);
         }
 
-        System.out.println("---- Matches Played Per Year ----");
-
-        Map<Integer, Integer> sorted = new TreeMap<>(countBySeason);
-        for (Map.Entry<Integer, Integer> entry : sorted.entrySet()) {
-            System.out.println(entry.getKey() + " -> " + entry.getValue() + " matches");
-        }
+        System.out.println(map);
     }
 
-     public void matchesWonPerTeam(List<Match> matches) {
-        HashMap<String, Integer> winsByTeam = new HashMap<>();
+    public void matchesWonPerTeam(List<Match> matches) {
+        HashMap<String, Integer> map = new HashMap<>();
 
-        for (Match m : matches) {
-            if (m.winner != null && !m.winner.isEmpty()) {
-                winsByTeam.put(m.winner, winsByTeam.getOrDefault(m.winner, 0) + 1);
-            }
+        for (var m : matches) {
+            map.put(m.winner, map.getOrDefault(m.winner, 0) + 1);
         }
 
-        System.out.println("---- Matches Won Per Team ----");
-        for (Map.Entry<String, Integer> entry : winsByTeam.entrySet()) {
-            System.out.println(entry.getKey() + " -> " + entry.getValue() + " wins");
-        }
+        System.out.println(map);
     }
 
-     public void extraRunsPerTeam(List<Match> matches, List<Delivery> deliveries) {
-    
-        Set<Integer> matchIdsIn2016 = new HashSet<>();
-        for (Match m : matches) {
+    public void extraRunsPerTeam(List<Match> matches, List<Delivery> deliverys) {
+
+        Set<Integer> matchId = new HashSet<>();
+        for (var m : matches) {
             if (m.season == 2016) {
-                matchIdsIn2016.add(m.id);
+                matchId.add(m.id);
             }
         }
-
-        HashMap<String, Integer> extraRunsByTeam = new HashMap<>();
-        for (Delivery d : deliveries) {
-            if (matchIdsIn2016.contains(d.matchId)) {
-                extraRunsByTeam.put(d.bowlingTeam,
-                        extraRunsByTeam.getOrDefault(d.bowlingTeam, 0) + d.extraRuns);
+        HashMap<String, Integer> map = new HashMap<>();
+        for (Delivery d : deliverys) {
+            if (matchId.contains(d.matchId)) {
+                map.put(d.bowlingTeam, map.getOrDefault(d.bowlingTeam, 0) + d.extraRuns);
             }
         }
-
-        System.out.println("--- Extra Runs Per Team ---");
-        for (Map.Entry<String, Integer> entry : extraRunsByTeam.entrySet()) {
-            System.out.println(entry.getKey() + " -> " + entry.getValue());
-        }
+        System.out.println(map);
     }
 
-    public void bowlerEconomyTop10(List<Match> matches, List<Delivery> deliveries) {
-        Set<Integer> matchIdsIn2015 = new HashSet<>();
+    public void bowlersEconomyArrange(List<Match> matches, List<Delivery> deliveries) {
+
+        Set<Integer> matchIds = new HashSet<>();
         for (Match m : matches) {
             if (m.season == 2015) {
-                matchIdsIn2015.add(m.id);
+                matchIds.add(m.id);
             }
         }
 
-        
-        HashMap<String, Integer> runsByBowler  = new HashMap<>();
-        HashMap<String, Integer> ballsByBowler = new HashMap<>();
+        HashMap<String, Integer> runsMap = new HashMap<>();
+        HashMap<String, Integer> ballsMap = new HashMap<>();
 
         for (Delivery d : deliveries) {
-            if (matchIdsIn2015.contains(d.matchId)) {
-                runsByBowler.put(d.bowler,
-                        runsByBowler.getOrDefault(d.bowler, 0) + d.totalRuns);
+            if (matchIds.contains(d.matchId)) {
+
+                runsMap.put(d.bowler,
+                        runsMap.getOrDefault(d.bowler, 0) + d.totalRuns);
 
                 if (d.wideRuns == 0) {
-                    ballsByBowler.put(d.bowler,
-                            ballsByBowler.getOrDefault(d.bowler, 0) + 1);
+                    ballsMap.put(d.bowler,
+                            ballsMap.getOrDefault(d.bowler, 0) + 1);
                 }
             }
         }
 
-        HashMap<String, Double> economyByBowler = new HashMap<>();
-        for (String bowler : runsByBowler.keySet()) {
-            int runs  = runsByBowler.get(bowler);
-            int balls = ballsByBowler.getOrDefault(bowler, 0);
+        HashMap<String, Double> economyMap = new HashMap<>();
+
+        for (String bowler : runsMap.keySet()) {
+            int runs = runsMap.get(bowler);
+            int balls = ballsMap.getOrDefault(bowler, 0);
+
             if (balls > 0) {
                 double economy = (runs * 6.0) / balls;
-                economyByBowler.put(bowler, economy);
+                economyMap.put(bowler, economy);
             }
         }
-        List<Map.Entry<String, Double>> sortedList = new ArrayList<>(economyByBowler.entrySet());
-        Collections.sort(sortedList, new Comparator<Map.Entry<String, Double>>() {
+
+        List<Map.Entry<String, Double>> list = new ArrayList<>(economyMap.entrySet());
+
+        Collections.sort(list, new Comparator<Map.Entry<String, Double>>() {
             public int compare(Map.Entry<String, Double> a, Map.Entry<String, Double> b) {
                 return Double.compare(a.getValue(), b.getValue());
             }
         });
 
-        System.out.println("----- Top 10 Bowlers by Economy ----");
+        // Step 6: print top 10
         int count = 0;
-        for (Map.Entry<String, Double> entry : sortedList) {
-            System.out.printf( entry.getKey() + entry.getValue());
+        for (Map.Entry<String, Double> e : list) {
+            System.out.println(e.getKey() + " -> " + e.getValue());
             count++;
-            if (count == 10) break;
+            if (count == 10) {
+                break;
+            }
         }
     }
 
-     public void matchesPlayedPerCity(List<Match> matches) {
-        HashMap<String, Integer> countByCity = new HashMap<>();
+    public void matchesPlayedPerCity(List<Match> matches) {
+        HashMap<String, Integer> ans = new HashMap<>();
 
-        for (Match m : matches) {
-            countByCity.put(m.city, countByCity.getOrDefault(m.city, 0) + 1);
+        for (var m : matches) {
+            ans.put(m.city, ans.getOrDefault(m.city, 0) + 1);
         }
 
-        System.out.println("---- Matches Played Per City ----");
-        for (Map.Entry<String, Integer> entry : countByCity.entrySet()) {
-            System.out.println(entry.getKey() + " -> " + entry.getValue() + " matches");
-        }
+        System.out.println(ans);
     }
 
-     public void tossWinsPerTeam(List<Match> matches) {
-        HashMap<String, Integer> tossWinsByTeam = new HashMap<>();
+    public void tosswinnerMostTimes(List<Match> matches) {
+        HashMap<String, Integer> map = new HashMap<>();
 
-        for (Match m : matches) {
-            tossWinsByTeam.put(m.tossWinner,
-                    tossWinsByTeam.getOrDefault(m.tossWinner, 0) + 1);
+        for (var m : matches) {
+            map.put(m.tossWinner, map.getOrDefault(m.tossWinner, 0) + 1);
         }
 
-        System.out.println("---- Toss Wins Per Team ----");
-        for (Map.Entry<String, Integer> entry : tossWinsByTeam.entrySet()) {
-            System.out.println(entry.getKey() + " -> " + entry.getValue() + " toss wins");
-        }
+        System.out.println(map);
+
     }
 
-     public void batVsFieldChoice(List<Match> matches) {
-        
-        HashMap<String, int[]> choiceByTeam = new HashMap<>();
+    // public void batVsField(List<Match> matches){
+    //     HashMap<String,Integer> bat = new HashMap<>();
+    //     HashMap<String,Integer> field = new HashMap<>();
+    //     for(var m : matches){
+    //         if(m.tossDecision.equals("field")){
+    //             field.put(m.tossDecision,field.getOrDefault(m.tossDecision, 0)+1);
+    //         }
+    //         if(m.tossDecision.equals("bat")){
+    //             bat.put(m.tossDecision,bat.getOrDefault(m.tossDecision, 0)+1);
+    //         }
+    //     }
+    //         for(var d : bat.entrySet()){
+    //             System.out.println(d.getKey() + " -->" + d.getValue());
+    //         }
+    //         System.out.println();
+    //         for(var d : field.entrySet()){
+    //             System.out.println(d.getKey() + " -->" + d.getValue());
+    //         }
+    // }
+    public void batVsField(List<Match> matches) {
+
+        HashMap<String, int[]> map = new HashMap<>();
 
         for (Match m : matches) {
+
             String team = m.tossWinner;
 
-            if (!choiceByTeam.containsKey(team)) {
-                choiceByTeam.put(team, new int[]{0, 0});
-            }
+            map.putIfAbsent(team, new int[2]);
 
             if (m.tossDecision.equals("bat")) {
-                choiceByTeam.get(team)[0]++; 
+                map.get(team)[0]++;
             } else if (m.tossDecision.equals("field")) {
-                choiceByTeam.get(team)[1]++; 
+                map.get(team)[1]++;
             }
         }
 
-        System.out.println("---- Bat vs Field Choice After Toss ----");
-        for (Map.Entry<String, int[]> entry : choiceByTeam.entrySet()) {
-            int batCount   = entry.getValue()[0];
+        for (Map.Entry<String, int[]> entry : map.entrySet()) {
+            String team = entry.getKey();
+            int batCount = entry.getValue()[0];
             int fieldCount = entry.getValue()[1];
-            System.out.println(entry.getKey()
-                    + " -> Bat: " + batCount + ", Field: " + fieldCount);
+
+            System.out.println(team + " -> Bat: " + batCount + ", Field: " + fieldCount);
         }
     }
 
-     public void matchesEndedByRunsVsWickets(List<Match> matches) {
-        int endedByRuns    = 0;
+    // public void matchesEndedByRunsWickets(List<Match> matches) {
+    //     HashMap<String,Integer> byWicket = new HashMap<>();
+    //     HashMap<String,Integer> byRun = new HashMap<>();
+    //     for(var m : matches){
+    //         byWicket.put("winByWickets",byWicket.getOrDefault(m.win_by_wickets, 0)+1);
+    //         byRun.put("ByRun",byRun.getOrDefault(m.win_by_runs, 0)+1);
+    //     }
+    //     for(var ans : byWicket.entrySet()){
+    //         System.out.println(ans.getKey() + "-->" + ans.getValue());
+    //     }
+    //     for(var ans : byRun.entrySet()){
+    //         System.out.println(ans.getKey() + "-->" + ans.getValue());
+    //     }
+    // }
+    public void matchesEndedByRunsWickets(List<Match> matches) {
+        int endedByRuns = 0;
         int endedByWickets = 0;
 
-        for (Match m : matches) {
-            if (m.winByRuns > 0) {
+        for (var m : matches) {
+            if (m.win_by_runs > 0) {
                 endedByRuns++;
             } else {
                 endedByWickets++;
             }
         }
-
-        System.out.println( "--- Match Results ----");
-        System.out.println("Ended by Runs    -> " + endedByRuns);
-        System.out.println("Ended by Wickets -> " + endedByWickets);
+        System.out.println("Ended By Runs --> " + endedByRuns);
+        System.out.println("Ended By Wickets --> " + endedByWickets);
     }
 
-     public void playerOfTheMatchCounts(List<Match> matches) {
-        HashMap<String, Integer> awardCounts = new HashMap<>();
+    public void mostPlayerOfTheMatch(List<Match> matches) {
+        HashMap<String, Integer> ans = new HashMap<>();
 
-        for (Match m : matches) {
-            if (m.playerOfMatch != null && !m.playerOfMatch.isEmpty()) {
-                awardCounts.put(m.playerOfMatch,
-                        awardCounts.getOrDefault(m.playerOfMatch, 0) + 1);
+        for (var m : matches) {
+            ans.put(m.playerOfMatch, ans.getOrDefault(m.playerOfMatch, 0) + 1);
+        }
+
+        Map<String, Integer> sorted = new TreeMap<>(ans);
+
+        //System.out.println(sorted);
+        for (var m : sorted.entrySet()) {
+            System.out.println(m.getKey() + " --> " + m.getValue());
+        }
+
+    }
+
+    public void mostTotalRuns(List<Delivery> deliverys) {
+
+        HashMap<String, Integer> ans = new HashMap<>();
+
+        for (var d : deliverys) {
+            String team = d.battingTeam;
+            ans.put(team, ans.getOrDefault(team, 0) + d.totalRuns);
+        }
+
+        String maxTeam = "";
+        Integer maxRuns = 0;
+
+        for (var m : ans.entrySet()) {
+            if (m.getValue() > maxRuns) {
+                maxRuns = m.getValue();
+                maxTeam = m.getKey();
+            }
+        }
+        System.out.println("MaxRuns -->" + maxRuns + "maxTeam -->" + maxTeam);
+    }
+
+    public void totalSixAndFour(List<Delivery> deliverys) {
+
+        HashMap<String, Integer> six = new HashMap<>();
+
+        for (var d : deliverys) {
+            if (d.batsmanRuns == 6) {
+                six.put(d.battingTeam, six.getOrDefault(d.battingTeam, 0) + 1);
+            }
+        }
+        HashMap<String, Integer> four = new HashMap<>();
+        for (var d : deliverys) {
+            if (d.batsmanRuns == 4) {
+                four.put(d.battingTeam, four.getOrDefault(d.battingTeam, 0) + 1);
             }
         }
 
-        Map<String, Integer> sorted = new TreeMap<>(awardCounts);
+        for (var s : six.entrySet()) {
+            System.out.println("SIXES  " + s.getKey() + " : " + s.getValue());
+        }
 
-        System.out.println("--- Player of the Match Award Counts ---");
-        for (Map.Entry<String, Integer> entry : sorted.entrySet()) {
-            System.out.println(entry.getKey() + " -> " + entry.getValue());
+        for (var s : four.entrySet()) {
+            System.out.println("FOUR  " + s.getKey() + " : " + s.getValue());
         }
     }
 
-     public void winPercentageOfTeams(List<Match> matches) {
+    public void mostWicketsBowler(List<Delivery> deliverys) {
+        HashMap<String, Integer> ans = new HashMap<>();
+
+        for (var d : deliverys) {
+            if (!d.playerDismissed.isEmpty() && !d.dismissalKind.equals("run out")) {
+                ans.put(d.bowler, ans.getOrDefault(d.bowler, 0) + 1);
+            }
+        }
+
+        for (var a : ans.entrySet()) {
+            System.out.println("Bowler -> " + a.getKey() + "   Wickets ->" + a.getValue());
+        }
+    }
+
+    public void winPercentOfTeams(List<Match> matches) {
+
         HashMap<String, Integer> matchesPlayed = new HashMap<>();
-        HashMap<String, Integer> matchesWon    = new HashMap<>();
+        HashMap<String, Integer> totalWins = new HashMap<>();
 
         for (Match m : matches) {
 
-            matchesPlayed.put(m.team1, matchesPlayed.getOrDefault(m.team1, 0) + 1);
-            matchesPlayed.put(m.team2, matchesPlayed.getOrDefault(m.team2, 0) + 1);
+            matchesPlayed.put(m.team1,
+                    matchesPlayed.getOrDefault(m.team1, 0) + 1);
 
-            
+            matchesPlayed.put(m.team2,
+                    matchesPlayed.getOrDefault(m.team2, 0) + 1);
+
             if (m.winner != null && !m.winner.isEmpty()) {
-                matchesWon.put(m.winner, matchesWon.getOrDefault(m.winner, 0) + 1);
+                totalWins.put(m.winner,
+                        totalWins.getOrDefault(m.winner, 0) + 1);
             }
         }
 
-        System.out.println("=== Win Percentage Per Team ===");
+        HashMap<String, Double> winPercent = new HashMap<>();
+
         for (String team : matchesPlayed.keySet()) {
+
             int played = matchesPlayed.get(team);
-            int won    = matchesWon.getOrDefault(team, 0);
-            double winPercent = (won * 100.0) / played;
-            System.out.printf("%-40s -> %.2f%%%n", team, winPercent);
+            int wins = totalWins.getOrDefault(team, 0);
+
+            double percentage = (wins * 100.0) / played;
+
+            winPercent.put(team, percentage);
+        }
+
+        System.out.println(winPercent);
+    }
+
+    public void top5batsmanWithStrikeRate(List<Delivery> deliveries) {
+
+        HashMap<String, Integer> runsMap = new HashMap<>();
+        HashMap<String, Integer> ballsMap = new HashMap<>();
+
+        for (Delivery d : deliveries) {
+
+            runsMap.put(d.batsman,
+                    runsMap.getOrDefault(d.batsman, 0) + d.batsmanRuns);
+
+            if (d.wideRuns == 0) {
+                ballsMap.put(d.batsman,
+                        ballsMap.getOrDefault(d.batsman, 0) + 1);
+            }
+        }
+
+        HashMap<String, Double> srMap = new HashMap<>();
+
+        for (String batsman : runsMap.keySet()) {
+
+            int runs = runsMap.get(batsman);
+            int balls = ballsMap.getOrDefault(batsman, 0);
+
+            if (balls > 0) {
+                double sr = (runs * 100.0) / balls;
+
+                if (balls >= 100) {
+                    srMap.put(batsman, sr);
+                }
+            }
+        }
+
+        List<Map.Entry<String, Double>> list
+                = new ArrayList<>(srMap.entrySet());
+
+        Collections.sort(list, new Comparator<Map.Entry<String, Double>>() {
+            public int compare(Map.Entry<String, Double> a,
+                    Map.Entry<String, Double> b) {
+                return Double.compare(b.getValue(), a.getValue());
+            }
+        });
+
+        int count = 0;
+        for (Map.Entry<String, Double> e : list) {
+            System.out.println(e.getKey() + " -> " + e.getValue());
+            count++;
+            if (count == 5) {
+                break;
+            }
         }
     }
 
+    public void headToHead(List<Match> matches) {
+
+        Map<String, Map<String, Integer>> map = new HashMap<>();
+
+        for (Match m : matches) {
+
+            if (m.winner == null || m.winner.isEmpty()) {
+                continue;
+            }
+
+            String winner = m.winner;
+            String loser;
+
+            if (winner.equals(m.team1)) {
+                loser = m.team2;
+            } else {
+                loser = m.team1;
+            }
+
+            map.putIfAbsent(winner, new HashMap<>());
+
+            Map<String, Integer> inner = map.get(winner);
+
+            inner.put(loser, inner.getOrDefault(loser, 0) + 1);
+        }
+
+        for (Map.Entry<String, Map<String, Integer>> e : map.entrySet()) {
+            System.out.println(e.getKey() + " -> " + e.getValue());
+        }
+    }
 
 }

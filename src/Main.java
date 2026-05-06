@@ -1,37 +1,33 @@
-import analysis.*;
+import analysis.Analysis;
 import java.util.List;
 import loader.CsvLoader;
 import model.Delivery;
 import model.Match;
 
-
 public class Main {
-
     public static void main(String[] args) throws Exception {
-
-        List<Match>    matches    = CsvLoader.loadMatches("data/matches.csv");
+        List<Match> matches = CsvLoader.loadMatches("data/matches.csv");
         List<Delivery> deliveries = CsvLoader.loadDeliveries("data/deliveries.csv");
 
-        System.out.println("Matches loaded:    " + matches.size());
+        Analysis a = new Analysis();
+
+        System.out.println("Matches loaded: " + matches.size());
         System.out.println("Deliveries loaded: " + deliveries.size());
-        System.out.println();
 
-        Analysis analysis = new Analysis();
-
-        analysis.matchesPlayedPerYear(matches);
-        // analysis.matchesWonPerTeam(matches);
-        // analysis.extraRunsPerTeam(matches, deliveries);
-        // analysis.bowlerEconomyTop10(matches, deliveries);
-        // analysis.matchesPlayedPerCity(matches);
-        // analysis.tossWinsPerTeam(matches);
-        // analysis.batVsFieldChoice(matches);
-        // analysis.matchesEndedByRunsVsWickets(matches);
-        // analysis.playerOfTheMatchCounts(matches);
-        // analysis.winPercentageOfTeams(matches);
-        // analysis.headToHeadRecord(matches);
-        // analysis.sixesAndFoursPerTeam(deliveries);
-        // analysis.teamWithMostRuns(deliveries);
-        // analysis.wicketsPerBowler(deliveries);
-        // analysis.top5BatsmanByStrikeRate(deliveries);
+         a.matchesPlayedPerYear(matches);
+        // a.matchesWonPerTeam(matches);
+        // a.extraRunsPerTeam(matches, deliveries);
+        // a.bowlersEconomyArrange(matches, deliveries);
+        // a.matchesPlayedPerCity(matches);
+        // a.tosswinnerMostTimes(matches);
+        // a.batVsField(matches);
+        // a.matchesEndedByRunsWickets(matches);
+        // a.mostPlayerOfTheMatch(matches);
+        // a.totalSixAndFour(deliveries);
+        // a.mostTotalRuns(deliveries);
+        // a.mostWicketsBowler(deliveries);
+        // a.winPercentOfTeams(matches);
+        // a.headToHead(matches);
+        // a.top5batsmanWithStrikeRate(deliveries);
     }
 }

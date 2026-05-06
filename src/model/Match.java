@@ -1,6 +1,5 @@
 package model;
 
-
 public class Match {
 
     public int    id;
@@ -14,8 +13,8 @@ public class Match {
     public String result;
     public String dlApplied;
     public String winner;
-    public int    winByRuns;
-    public int    winByWickets;
+    public int    win_by_runs;
+    public int    win_by_wickets;
     public String playerOfMatch;
     public String venue;
     public String umpire1;

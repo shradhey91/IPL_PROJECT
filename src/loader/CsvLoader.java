@@ -58,8 +58,8 @@ public class CsvLoader {
         m.result        = col[8];
         m.dlApplied     = col[9];
         m.winner        = col[10];
-        m.winByRuns     = toInt(col[11]);
-        m.winByWickets  = toInt(col[12]);
+        m.win_by_runs     = toInt(col[11]);
+        m.win_by_wickets = toInt(col[12]);
         m.playerOfMatch = col[13];
         m.venue         = col[14];
         m.umpire1       = col[15];

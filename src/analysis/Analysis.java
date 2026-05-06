@@ -171,5 +171,22 @@ public class Analysis{
         }
     }
 
+     public void matchesEndedByRunsVsWickets(List<Match> matches) {
+        int endedByRuns    = 0;
+        int endedByWickets = 0;
+
+        for (Match m : matches) {
+            if (m.winByRuns > 0) {
+                endedByRuns++;
+            } else {
+                endedByWickets++;
+            }
+        }
+
+        System.out.println( "--- Match Results ----");
+        System.out.println("Ended by Runs    -> " + endedByRuns);
+        System.out.println("Ended by Wickets -> " + endedByWickets);
+    }
+
 
 }

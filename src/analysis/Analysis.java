@@ -144,5 +144,32 @@ public class Analysis{
         }
     }
 
+     public void batVsFieldChoice(List<Match> matches) {
+        
+        HashMap<String, int[]> choiceByTeam = new HashMap<>();
+
+        for (Match m : matches) {
+            String team = m.tossWinner;
+
+            if (!choiceByTeam.containsKey(team)) {
+                choiceByTeam.put(team, new int[]{0, 0});
+            }
+
+            if (m.tossDecision.equals("bat")) {
+                choiceByTeam.get(team)[0]++; 
+            } else if (m.tossDecision.equals("field")) {
+                choiceByTeam.get(team)[1]++; 
+            }
+        }
+
+        System.out.println("---- Bat vs Field Choice After Toss ----");
+        for (Map.Entry<String, int[]> entry : choiceByTeam.entrySet()) {
+            int batCount   = entry.getValue()[0];
+            int fieldCount = entry.getValue()[1];
+            System.out.println(entry.getKey()
+                    + " -> Bat: " + batCount + ", Field: " + fieldCount);
+        }
+    }
+
 
 }

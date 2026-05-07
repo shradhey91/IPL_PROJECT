@@ -363,6 +363,219 @@ public class Analysis {
         }
     }
 
+    public void perYearPerTeamMostSinglesScoredInFirstFiveOvers(
+            List<Match> matches,
+            List<Delivery> deliveries) {
+
+        HashMap<Integer, Integer> matchSeason = new HashMap<>();
+
+        for (Match m : matches) {
+            matchSeason.put(m.id, m.season);
+        }
+
+        HashMap<Integer, HashMap<String, HashMap<String, Integer>>> singlesMap = new HashMap<>();
+
+        for (Delivery d : deliveries) {
+
+            if (d.over <= 5 && d.batsmanRuns == 1) {
+
+                int season = matchSeason.get(d.matchId);
+
+                singlesMap.putIfAbsent(season, new HashMap<>());
+
+                singlesMap.get(season)
+                        .putIfAbsent(d.battingTeam, new HashMap<>());
+
+                HashMap<String, Integer> playerMap
+                        = singlesMap.get(season).get(d.battingTeam);
+
+                playerMap.put(
+                        d.batsman,
+                        playerMap.getOrDefault(d.batsman, 0) + 1
+                );
+            }
+        }
+
+        for (Integer season : singlesMap.keySet()) {
+
+            HashMap<String, HashMap<String, Integer>> teamMap
+                    = singlesMap.get(season);
+
+            for (String team : teamMap.keySet()) {
+
+                HashMap<String, Integer> playerMap
+                        = teamMap.get(team);
+
+                String topPlayer = "";
+                int max = 0;
+
+                for (var e : playerMap.entrySet()) {
+
+                    if (e.getValue() > max) {
+                        max = e.getValue();
+                        topPlayer = e.getKey();
+                    }
+                }
+
+                System.out.println(
+                        season + " | "
+                        + team + " | "
+                        + topPlayer + " | "
+                        + max
+                );
+            }
+        }
+    }
+
+    public void highestStrikeRateDeathOversPerTeamPerSeason(List<Match> matches,
+            List<Delivery> deliveries) {
+
+        HashMap<Integer, Integer> matchSeason = new HashMap<>();
+        for (Match m : matches) {
+            matchSeason.put(m.id, m.season);
+        }
+
+        HashMap<Integer, HashMap<String, HashMap<String, Integer>>> runsMap = new HashMap<>();
+        HashMap<Integer, HashMap<String, HashMap<String, Integer>>> ballsMap = new HashMap<>();
+
+        for (Delivery d : deliveries) {
+            if (d.over >= 16 && matchSeason.containsKey(d.matchId)) {
+                int season = matchSeason.get(d.matchId);
+                String team = d.battingTeam;
+                String batsman = d.batsman;
+
+                runsMap.putIfAbsent(season, new HashMap<>());
+                runsMap.get(season).putIfAbsent(team, new HashMap<>());
+                HashMap<String, Integer> rMap = runsMap.get(season).get(team);
+                rMap.put(batsman, rMap.getOrDefault(batsman, 0) + d.batsmanRuns);
+
+                ballsMap.putIfAbsent(season, new HashMap<>());
+                ballsMap.get(season).putIfAbsent(team, new HashMap<>());
+                if (d.wideRuns == 0) {
+                    HashMap<String, Integer> bMap = ballsMap.get(season).get(team);
+                    bMap.put(batsman, bMap.getOrDefault(batsman, 0) + 1);
+                }
+            }
+        }
+
+        List<Integer> seasons = new ArrayList<>(runsMap.keySet());
+        Collections.sort(seasons);
+
+        for (int season : seasons) {
+            HashMap<String, HashMap<String, Integer>> teamRuns = runsMap.get(season);
+            for (String team : teamRuns.keySet()) {
+                HashMap<String, Integer> bRuns = teamRuns.get(team);
+                HashMap<String, Integer> bBalls = ballsMap.get(season).get(team);
+
+                String topBatsman = "";
+                double bestSR = -1;
+
+                for (String batsman : bRuns.keySet()) {
+                    int runs = bRuns.get(batsman);
+                    int balls = bBalls.getOrDefault(batsman, 0);
+                    if (balls > 0) {
+                        double sr = (runs * 100.0) / balls;
+                        if (sr > bestSR) {
+                            bestSR = sr;
+                            topBatsman = batsman;
+                        }
+                    }
+                }
+
+                System.out.println(season + " | " + team + " | " + topBatsman + " | SR = " + bestSR);
+            }
+        }
+    }
+
+    public void topStrikeRateByTeamVenue2015(List<Match> matches,
+            List<Delivery> deliveries) {
+
+        HashMap<Integer, String> venueMap = new HashMap<>();
+
+        for (Match m : matches) {
+
+            if (m.season == 2015) {
+                venueMap.put(m.id, m.venue);
+            }
+        }
+
+        HashMap<String, HashMap<String, HashMap<String, Integer>>> runsMap = new HashMap<>();
+
+        HashMap<String, HashMap<String, HashMap<String, Integer>>> ballsMap = new HashMap<>();
+
+        for (Delivery d : deliveries) {
+
+            if (venueMap.containsKey(d.matchId)) {
+
+                String team = d.battingTeam;
+                String venue = venueMap.get(d.matchId);
+                String batsman = d.batsman;
+
+                runsMap.putIfAbsent(team, new HashMap<>());
+                runsMap.get(team).putIfAbsent(venue, new HashMap<>());
+
+                HashMap<String, Integer> batsmanRunsMap
+                        = runsMap.get(team).get(venue);
+
+                batsmanRunsMap.put(batsman,
+                        batsmanRunsMap.getOrDefault(batsman, 0)
+                        + d.batsmanRuns);
+
+                ballsMap.putIfAbsent(team, new HashMap<>());
+                ballsMap.get(team).putIfAbsent(venue, new HashMap<>());
+
+                if (d.wideRuns == 0) {
+
+                    HashMap<String, Integer> batsmanBallsMap
+                            = ballsMap.get(team).get(venue);
+
+                    batsmanBallsMap.put(batsman,
+                            batsmanBallsMap.getOrDefault(batsman, 0)
+                            + 1);
+                }
+            }
+        }
+
+        for (String team : runsMap.keySet()) {
+
+            HashMap<String, HashMap<String, Integer>> venueRuns
+                    = runsMap.get(team);
+
+            for (String venue : venueRuns.keySet()) {
+
+                String topBatsman = "";
+                double bestSR = 0;
+
+                HashMap<String, Integer> batsmanRuns
+                        = venueRuns.get(venue);
+
+                HashMap<String, Integer> batsmanBalls
+                        = ballsMap.get(team).get(venue);
+
+                for (String batsman : batsmanRuns.keySet()) {
+
+                    int runs = batsmanRuns.get(batsman);
+                    int balls = batsmanBalls.getOrDefault(batsman, 0);
+
+                    if (balls > 0) {
+
+                        double sr = (runs * 100.0) / balls;
+
+                        if (sr > bestSR) {
+                            bestSR = sr;
+                            topBatsman = batsman;
+                        }
+                    }
+                }
+
+                System.out.println(team + " | "
+                        + venue + " | "
+                        + topBatsman + " | SR = "
+                        + bestSR);
+            }
+        }
+    }
+
     public void mostCatchesDeath2016(List<Match> matches,
             List<Delivery> deliveries) {
 
@@ -501,7 +714,6 @@ public class Analysis {
 
                 Match m = matchMap.get(d.matchId);
 
-        
                 if (!d.battingTeam.equals("Royal Challengers Bangalore")) {
 
                     String venue = venueMap.get(d.matchId);

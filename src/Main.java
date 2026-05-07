@@ -1,4 +1,6 @@
 import analysis.Analysis;
+import analysis.Review;
+
 import java.util.List;
 import loader.CsvLoader;
 import model.Delivery;
@@ -10,6 +12,8 @@ public class Main {
         List<Delivery> deliveries = CsvLoader.loadDeliveries("data/deliveries.csv");
 
         Analysis a = new Analysis();
+
+        Review r = new Review();
 
         System.out.println("Matches loaded: " + matches.size());
         System.out.println("Deliveries loaded: " + deliveries.size());
@@ -29,6 +33,13 @@ public class Main {
         // a.winPercentOfTeams(matches);
         // a.headToHead(matches);
         // a.top5batsmanWithStrikeRate(deliveries);
-        a.highestSinglesAgainstCSK2015(matches, deliveries);
+        // a.highestSinglesAgainstCSK2015(matches, deliveries);
+        // a.bestDeathOverBowlerPerSeason(matches, deliveries);
+        // a.mostCatchesDeath2016(matches, deliveries);
+        //r.perYearPerTeamMostSinglesScoredInFirstFiveOvers(matches, deliveries);
+        //r.highestStrikeRateDeathOversPerTeamPerSeason(matches, deliveries);
+
+        r.playerWithHighestStrikeRateAgainstRcbIn2016ByVenue(matches, deliveries);
+
     }
 }
